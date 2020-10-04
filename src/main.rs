@@ -54,11 +54,15 @@ impl Shape {
     pub fn display (&self) -> String {
         let mut display_str = String::new();
         let base : usize = self.vertices.len();
-        for i in (0..base).map(|x| usize::try_from(
-            (i32::try_from(base).unwrap() 
-            + i32::try_from(self.rot_index).unwrap() 
-            + i32::try_from(x).unwrap() * (if !self.inverted {1} else {-1})
-            ) % i32::try_from(base).unwrap()).unwrap()
+
+        /* We need compatibility because of logic involving negative multiplications */
+        let comp_base : i32 = i32::try_from(base).unwrap();
+        let comp_rot_index : i32 = i32::try_from(self.rot_index).unwrap();
+        let inv_multiplier : i32 = if !self.inverted {1} else {-1};
+        for i in (0..base).map(|x| 
+            usize::try_from(
+                (comp_base + comp_rot_index + i32::try_from(x).unwrap() * inv_multiplier) % comp_base
+            ).unwrap()
         ) {
             display_str.push_str(format!("{} ", self.vertices[i].color.0).as_str());
             display_str.push_str(format!("{} ", self.vertices[i].color.1).as_str());
@@ -75,7 +79,20 @@ impl Shape {
     fn tokenize(requested : &String) -> Result<Vec<Transformation>, &str> {
         let mut tv : Vec<Transformation> = Vec::new();
         let mut erroneous = false;
+        let mut split = requested.split_whitespace();
+        /* for token in split {
+            match text.chars().nth(0).unwrap() {
+               'x' => tv.push(Transformation::D_n_generator(D_n_Generators::x)),
+               'p' => tv.push(Transformation::D_n_generator(D_n_Generators::p)),
+               '(' => {
 
+               },
+               _  => {
+                   erroneous = true;
+                   break;
+               },
+           }
+        } */
         if !erroneous {Ok(tv)} else {Err("Invalid user input")}
     }
     /* WIP */
