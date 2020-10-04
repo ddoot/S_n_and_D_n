@@ -28,6 +28,7 @@ impl Shape {
         let capacity : usize = usize::from(number_points);
         let mut v : Vec<Point> = Vec::with_capacity(capacity);
         for i in 0..capacity {
+            /* This is definitely fallible */
             v.push(Point {color : (u8::try_from(i).unwrap(), 0, 0)});
         }
         Shape {
@@ -52,6 +53,17 @@ impl Shape {
 
     pub fn display (& self) -> String {
         let mut display_str = String::new();
+        let base : usize = self.vertices.len();
+        for i in (0..base).map(|x| usize::try_from(
+            (i32::try_from(base).unwrap() 
+            + i32::try_from(self.rot_index).unwrap() 
+            + i32::try_from(x).unwrap() * (if !self.inverted {1} else {-1})
+            ) % i32::try_from(base).unwrap()).unwrap()
+        ) {
+            display_str.push_str(format!("{} ", self.vertices[i].color.0).as_str());
+            display_str.push_str(format!("{} ", self.vertices[i].color.1).as_str());
+            display_str.push_str(format!("{} \n", self.vertices[i].color.2).as_str());
+        }
         display_str
     }
 
@@ -85,7 +97,8 @@ impl Shape {
             D_n_Generators::x => self.inverted = !self.inverted,
             D_n_Generators::p => {
                 let base : u16 = u16::try_from(self.vertices.len()).unwrap();
-                self.rot_index = (if !self.inverted {self.rot_index + 1} else {self.rot_index - 1}) % base;
+                /* SO MANY ASSUMPTIONS ABOUT ARITHMETIC: GET HELP */
+                self.rot_index = ((if !self.inverted {self.rot_index + 1} else {self.rot_index - 1}) + base) % base;
             },
         }
     }
