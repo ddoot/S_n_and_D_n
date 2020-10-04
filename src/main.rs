@@ -44,12 +44,17 @@ impl Shape {
      * */
     pub fn apply_transformation 
         (&mut self, requested : &String) -> Result<bool, &str> {
-            let mut non_trivial : bool = false;
             let mut tv : Vec<Transformation> = Shape::tokenize(requested).unwrap();
             Shape::simplify(&mut tv);
-            non_trivial = (tv.len() > 0);
+            let non_trivial : bool = tv.len() > 0;
             Ok(non_trivial)
     }
+
+    /* WIP 
+     * (1, i) = (i, 1) = Transformation::S_n_generator(i - 1) 
+     * p^{}
+     * x^m
+     * */
     fn tokenize(requested : &String) -> Result<Vec<Transformation>, &str> {
         let mut tv : Vec<Transformation> = Vec::new();
         let mut erroneous = false;
@@ -58,21 +63,25 @@ impl Shape {
     /* WIP */
     fn simplify(tv : &mut Vec<Transformation>) {
     }
-    fn transform(&mut self, tv : Vec<Transformation>) {
+
+
+    fn transform(&mut self, tv : &Vec<Transformation>) {
         for transformation in tv.iter() {
             match transformation {
-                Transformation::D_n_generator(rotation) => {
-                    match rotation {
-                        D_n_Generators::x => self.inverted = !self.inverted,
-                        D_n_Generators::p => {
-                            let base : u16 = u16::try_from(self.vertices.len()).unwrap();
-                            self.rot_index = (if !self.inverted {self.rot_index + 1} else {self.rot_index - 1}) % base;
-                        },
-                    }
-                },
+                Transformation::D_n_generator(rotation) => self.apply_rotation(&rotation),
                 Transformation::S_n_generator(which_position) =>
                     self.vertices.swap(0, usize::from(*which_position)),
             }
+        }
+    }
+
+    fn apply_rotation(&mut self, rotation : &D_n_Generators) {
+        match rotation {
+            D_n_Generators::x => self.inverted = !self.inverted,
+            D_n_Generators::p => {
+                let base : u16 = u16::try_from(self.vertices.len()).unwrap();
+                self.rot_index = (if !self.inverted {self.rot_index + 1} else {self.rot_index - 1}) % base;
+            },
         }
     }
 }
