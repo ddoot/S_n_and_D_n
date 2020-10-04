@@ -28,7 +28,7 @@ impl Shape {
         let capacity : usize = usize::from(number_points);
         let mut v : Vec<Point> = Vec::with_capacity(capacity);
         for i in 0..capacity {
-            v.push(Point {color : (0, 0, 0)});
+            v.push(Point {color : (u8::try_from(i).unwrap(), 0, 0)});
         }
         Shape {
             vertices : v,
