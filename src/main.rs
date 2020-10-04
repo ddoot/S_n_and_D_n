@@ -50,6 +50,11 @@ impl Shape {
             Ok(non_trivial)
     }
 
+    pub fn display (& self) -> String {
+        let mut display_str = String::new();
+        display_str
+    }
+
     /* WIP 
      * (1, i) = (i, 1) = Transformation::S_n_generator(i - 1) 
      * p^{}
