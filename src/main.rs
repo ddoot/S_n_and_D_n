@@ -51,7 +51,7 @@ impl Shape {
             Ok(non_trivial)
     }
 
-    pub fn display (& self) -> String {
+    pub fn display (&self) -> String {
         let mut display_str = String::new();
         let base : usize = self.vertices.len();
         for i in (0..base).map(|x| usize::try_from(
@@ -75,6 +75,7 @@ impl Shape {
     fn tokenize(requested : &String) -> Result<Vec<Transformation>, &str> {
         let mut tv : Vec<Transformation> = Vec::new();
         let mut erroneous = false;
+
         if !erroneous {Ok(tv)} else {Err("Invalid user input")}
     }
     /* WIP */
