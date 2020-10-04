@@ -7,14 +7,15 @@ struct Point {
 
 struct Shape {
     vertices : Vec<Point>,
-    rot_index : u32,
+    rot_index : u16,
     inverted : bool,
 }
 
 impl Shape {
-    pub fn new(number_points : usize) -> Shape {
-        let mut v : Vec<Point> = Vec::with_capacity(number_points);
-        for i in 0..number_points {
+    pub fn new(number_points : u16) -> Shape {
+        let mut v : Vec<Point> =
+            Vec::with_capacity(usize::from(number_points));
+        for i in 0..usize::from(number_points) {
             v.push(Point {color : (0, 0, 0)});
         }
         Shape {
