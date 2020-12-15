@@ -31,6 +31,7 @@ impl Shape {
             /* This is definitely fallible */
             v.push(Point {color : (u8::try_from(i).unwrap(), 0, 0)});
         }
+
         Shape {
             vertices : v,
             rot_index : 0,
@@ -44,30 +45,30 @@ impl Shape {
      * upon sucess, or an error upon invalid input.
      * */
     pub fn apply_transformation 
-        (&mut self, requested : &String) -> Result<bool, &str> {
+        (&mut self, requested : &str) -> Result<bool, &str> {
             let mut tv : Vec<Transformation> = Shape::tokenize(requested).unwrap();
             Shape::simplify(&mut tv);
-            let non_trivial : bool = tv.len() > 0;
-            Ok(non_trivial)
+            self.transform(&tv);
+            Ok(tv.len() > 0)
     }
 
     pub fn display (&self) -> String {
         let mut display_str = String::new();
+        
         let base : usize = self.vertices.len();
-
         /* We need compatibility because of logic involving negative multiplications */
         let comp_base : i32 = i32::try_from(base).unwrap();
         let comp_rot_index : i32 = i32::try_from(self.rot_index).unwrap();
         let inv_multiplier : i32 = if !self.inverted {1} else {-1};
-        for i in (0..base).map(|x| 
-            usize::try_from(
-                (comp_base + comp_rot_index + i32::try_from(x).unwrap() * inv_multiplier) % comp_base
-            ).unwrap()
-        ) {
-            display_str.push_str(format!("{} ", self.vertices[i].color.0).as_str());
-            display_str.push_str(format!("{} ", self.vertices[i].color.1).as_str());
-            display_str.push_str(format!("{} \n", self.vertices[i].color.2).as_str());
+        
+        for i in (0..base).map(|x| usize::try_from(
+            (comp_base + comp_rot_index + i32::try_from(x).unwrap() * inv_multiplier) % comp_base
+        ).unwrap()) {
+            display_str.push_str(format!("rot_index is {} with color {} ", i, self.vertices[i].color.0).as_str());
+            display_str.push_str(format!("rot_index is {} with color {} ", i, self.vertices[i].color.1).as_str());
+            display_str.push_str(format!("rot_index is {} with color {} \n", i, self.vertices[i].color.2).as_str());
         }
+
         display_str
     }
 
@@ -76,27 +77,28 @@ impl Shape {
      * p^{}
      * x^m
      * */
-    fn tokenize(requested : &String) -> Result<Vec<Transformation>, &str> {
+    fn tokenize(requested : &str) -> Result<Vec<Transformation>, &str> {
         let mut tv : Vec<Transformation> = Vec::new();
         let mut erroneous = false;
-        let mut split = requested.split_whitespace();
-        /* for token in split {
-            match text.chars().nth(0).unwrap() {
+        let split = requested.split_whitespace();
+        for token in split {
+            match token.chars().nth(0).unwrap() {
                'x' => tv.push(Transformation::D_n_generator(D_n_Generators::x)),
                'p' => tv.push(Transformation::D_n_generator(D_n_Generators::p)),
                '(' => {
-
+                   /* atoi() like thing needed here */
                },
-               _  => {
+               _   => {
                    erroneous = true;
                    break;
                },
            }
-        } */
+        }
         if !erroneous {Ok(tv)} else {Err("Invalid user input")}
     }
     /* WIP */
     fn simplify(tv : &mut Vec<Transformation>) {
+
     }
 
 
@@ -116,12 +118,33 @@ impl Shape {
             D_n_Generators::p => {
                 let base : u16 = u16::try_from(self.vertices.len()).unwrap();
                 /* SO MANY ASSUMPTIONS ABOUT ARITHMETIC: GET HELP */
-                self.rot_index = ((if !self.inverted {self.rot_index + 1} else {self.rot_index - 1}) + base) % base;
+                self.rot_index = ((if self.inverted {self.rot_index + base + 1} else {self.rot_index + base - 1})) % base;
             },
         }
     }
 }
 
 fn main() {
+    let mut s : Shape = Shape::new(3);
+    println!("{}", s.display().as_str());
+    s.apply_transformation("x");
+    println!("{}", s.display().as_str());
+
+    s.apply_transformation("x");
+    println!("{}", s.display().as_str());
+
+    s.apply_transformation("x");
+    println!("{}", s.display().as_str());
+
+    s.apply_transformation("p");
+    println!("{}", s.display().as_str());
+
+    s.apply_transformation("x");
+    println!("{}", s.display().as_str());
+
+    s.apply_transformation("p");
+    println!("{}", s.display().as_str());
+
+
     println!("Hello, world!");
 }
