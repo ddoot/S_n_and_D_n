@@ -1,1 +1,5 @@
-
+This was a project I started because I wanted to illustrate to a friend some concepts in Modern Algebra. There were multiple points of difficulty in getting this done: the relative
+dearth of easy to use Rust graphics libraries, the compiler being very strict, and finally,
+the difficulty in actually verifying. I decided, then, that this project would resort to a
+command-line interface, since graphics expansions could be added to the source code later,
+given that the mathematics is pretty much solved.
