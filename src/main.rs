@@ -17,6 +17,22 @@ struct Point {
 }
 
 
+     /*      0
+      *  1       4
+      *
+      *    2   3
+      *
+      *      p
+      *      4
+      *  0       3
+      *    
+      *    1   2
+      *
+      *
+      *
+      * */
+
+
 struct Shape {
     vertices : Vec<Point>,
     rot_index : u16,
@@ -25,9 +41,18 @@ struct Shape {
 
 impl Shape {
     pub fn new(number_points : u16) -> Shape {
+
+        /* From recollection, this was about u16? */
         let capacity : usize = usize::from(number_points);
+
         let mut v : Vec<Point> = Vec::with_capacity(capacity);
+
+        let mut red : u8;
+        let mut green : u8;
+        let mut blue : u8;
+        /* Addiing the points */
         for i in 0..capacity {
+
             /* This is definitely fallible */
             v.push(Point {color : (u8::try_from(i).unwrap(), 0, 0)});
         }
@@ -72,8 +97,7 @@ impl Shape {
         display_str
     }
 
-    /* WIP 
-     * (1, i) = (i, 1) = Transformation::S_n_generator(i - 1) 
+    /* (1, i) = (i, 1) = Transformation::S_n_generator(i - 1) 
      * p^{}
      * x^m
      * */
@@ -96,7 +120,8 @@ impl Shape {
         }
         if !erroneous {Ok(tv)} else {Err("Invalid user input")}
     }
-    /* WIP */
+
+
     fn simplify(tv : &mut Vec<Transformation>) {
 
     }
@@ -144,7 +169,4 @@ fn main() {
 
     s.apply_transformation("p");
     println!("{}", s.display().as_str());
-
-
-    println!("Hello, world!");
 }
